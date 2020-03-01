@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>unst4b13</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="./css/blog-home.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+</head>
+
+<body style="background-color: #171717;color:white;">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" >
+    <div class="container" >
+      <a class="navbar-brand" href="index.html">unst4b13</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="rop.html">ROP Videos</a>
+          </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Protostar
+              </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="stack.html">Stack Exploits</a>
+              <a class="dropdown-item" href="heap.html">Heap Exploits</a>
+          </div>
+      </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Blog Entries Column -->
+      <div class="col-md-8" style="display: inline-block;">
+          <h1 style="margin-top:1em;margin-bottom:0.5em;">Protostar Exploit Exercises</h1>
+          <p>The Protostar virtual machine is available for download <a href="https://www.vulnhub.com/entry/exploit-exercises-protostar-v2,32/">here</a> at <a href="https://www.vulnhub.com/">https://www.vulnhub.com</a>.</p>
+          <p>The source code for all of the exercises are availabe at <a href="https://exploit-exercises.lains.space/protostar/">https://exploit-exercises.lains.space</a>.</p>
+          <hr>
+          <div data-spy="scroll" data-target="#list-example" data-offset="0" class="scrollspy-example">
+              <h3>Stack 0</h3>
+              <img src="./images/stack0.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+              <p>Here we are challenged to try and change the <span class="variable"><b>modified</b></span> variable. We have a character <span class="variable"><b>buffer</b></span> that can hold <span class="integer"><b>64</b></span> bytes. The program uses the <span class="function"><b>gets()</b></span> function to fill
+                  the buffer with data. I will try putting an excess amount of data into the buffer through the  <span class="function"><b>gets()</b></span> function. This will cause an overflow into the <span class="variable"><b>modified</b></span> variable. Please note: typing out
+                  'A' <span class="integer"><b>65</b></span> times is not required. An efficient method to modify the variable would be the command: <span class="instruction"><b>python -c 'print "A" * 65' | ./stack0</b></span>
+              </p>
+              <h3 style="margin-top:1em;margin-bottom:-0.5em;">Stack 0 Solution</h3>
+              <img src="./images/stack0solv.png" class="img-fluid rounded" width="100%" style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+              <hr>
+              <h3>Stack 1</h3>
+              <img src="./images/stack1.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+              <p>In this challenge we have a similar situation in regards to having a character buffer. However, this time clumsily overflowing into the <span class="variable"><b>modified</b></span> variable will not be enough. We are asked to overflow a 
+                  specific value into the <span class="variable"><b>modified</b></span> variable. The <span class="variable"><b>modified</b></span> variable needs to equal <span class="address"><b>0x61626364</b></span> which is the hexadecimal representation of "abcd". We can fill the buffer with <span class="integer"><b>64</b></span> bytes and then 
+                  tack on the extra "abcd" to the end. Simple enough. But there is one small modification, we are going to have to input the "abcd" as "dcba" due to endianess. Intel x86 processors use little-endian format, which 
+                  means that the least significant bit goes first. <span class="instruction"><b>./stack1 $(python -c 'print "A" * 64 + "dcba"')</b></span>
+              </p>
+              <h3 style="margin-top:1em;margin-bottom:-0.5em;">Stack 1 Solution</h3>
+              <img src="./images/stack1solv.png"  class="img-fluid rounded" width="100%" style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+              <hr>
+              <h3>Stack 2</h3>
+              <img src="./images/stack2.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+              <p>In the stack two challenge we will create an environment variable that will overflow into the <span class="variable"><b>modified</b></span> variable. In our previous challenges we have been able to print out what was required to 
+                  complete the challenge. However, in this challenge the <span class="variable"><b>modified</b></span> variable must equal <span class="address"><b>0x0D0A0D0A</b></span>. As before these are the hexadecimal representations of ASCII characters. But 0x0D and 0x0A
+                  are unprintable characters. If you visit <a href="http://www.asciitable.com/">www.asciitable.com</a> you can see all of the ASCII characters along with their decimal, hexadecimal, and octal 
+                  representations. To set the environment variable, I am going to use the command: <span class="instruction"><b>export GREENIE=$(python -c 'print "A" * 64 + "\x0a\x0d\x0a\x0d"')</b></span></p>
+              <h3 style="margin-top:1em;margin-bottom:-0.5em;">Stack 2 Solution</h3>
+              <img src="./images/stack2solv.png"  class="img-fluid rounded" width="100%" height="500" style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+              <hr>
+              <h3>Stack 3</h3>
+              <img src="./images/stack3.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+              <p>The goal of this challenge is to try and call the <span class="function"><b>win()</b></span> function. The bad news is that the program never calls the <span class="function"><b>win()</b></span> function. The good news is there is a function pointer right above a call to a gets function.
+                  If I put the address of the win function into the <span class="variable"><b>fp</b></span> variable, then the <span class="function"><b>win()</b></span> function will get called when <span class="variable"><b>fp</b></span> is executed. I'm going to find the address of the <span class="function"><b>win()</b></span> function with a GNU development tool called objdump. 
+                 By using the command: <span class="instruction"><b>objdump -M intel -d stack3 | less</b></span>
+              </p>
+              <p>The output from the above command shows the win function at <span class="address"><b>0x08048424</b></span>. If I can overflow the address into the <span class="variable"><b>fp</b></span> variable, then the <span class="function"><b>win()</b></span> function
+                will get called once the function pointer gets called in the final line of the program. The final command is: <span class="instruction"><b>python -c 'print "A" * 64 + "\x23\x84\x04\x08"' | ./stack3</b></span>
+              </p>
+              <h3 style="margin-top:1em;margin-bottom:-0.5em;">Stack 3 Solution</h3>
+              <img src="./images/stack3solv.png"   class="img-fluid rounded" width="100%"  style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+              <hr>
+              <h3>Stack 4</h3>
+              <img src="./images/stack4.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+              <p>This challenge is very similar to the Stack 3 Exercise, but taking control of the return address is going to take a bit more investigation. To help find the return address I'm going to try and make the program crash. Using the command:
+                <span class="instruction"><b>pwn cyclic 50</b></span>, gives the output below:</p>
+                <img src="./images/stack4a.png"   class="img-fluid rounded" width="100%"  style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+                <p>Notice the above gives an easily identifiable pattern that I will take advantage of in a minute. Next, I am going to open GDB and find out what is crashing the program.</p>
+                <img src="./images/stack4b.png"   class="img-fluid rounded" width="100%"  style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+                <p>There is a segmentation fault where the program attempts to execute at address: <span class="address"><b>0x61616174</b></span>. This value should look familiar, it came from 
+                the 'pwn cyclic' command. Using the command: <span class="instruction"><b>pwn cyclic -l </b></span><span class="address"><b>0x61616174</b></span> will
+                give the output <span class="integer"><b>76</b></span>. This means <span class="integer"><b>76</b></span> bytes are needed to take control of the return address. The final command is: <span class="instruction"><b>python -c 'print "A" * 76 + "\xf4\x83\x04\x08"' | ./stack4</b></span>
+              
+              </p>
+              <h3 style="margin-top:1em;margin-bottom:-0.5em;">Stack 4 Solution</h3>
+              <img src="./images/stack4solv.png"  class="img-fluid rounded" width="100%"  style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+              <hr>
+              <h3>Stack 5</h3>
+              <img src="./images/stack5.png"  class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+              <p>In this challenge, we are only given a character buffer and a <span class="function"><b>gets()</b></span> function to overflow. I'll use the same technique as I did in the previous challenges to find where EIP is located. We are going to need to fill <span class="integer"><b>72</b></span> bytes
+                to take control of the instruction pointer. In our previous challenges, there was usually a function to call or variable to change. In stack5, there aren't any variables or functions to call or modify. The goal of this challenge
+                is to elevate privileges. We start out as the user 'user', and we are confined to the permissions of 'user'. The stack5 executable has its sticky bit set. What this means is that the owner of the file (root) has allowed any user of 
+                the program to run this program with higher privileges. Our goal is to overflow the buffer, redirect EIP to a NOP sled that slides into shellcode that will spawn a shell. I'll be writing an article on Linux permissions and shellcode
+                in the near future.
+              </p>
+              <img src="./images/stack5a.png" class="img-fluid rounded" width="100%" style="margin-top: 1em;margin-bottom: 2em;">
+              <p>We craft our exploit using a python script. When we run it into the stack5 file we see in the above image that we successfully start a new program '/bin/dash' which spawns a shell with the owner of the programs (root) priviliges.</p>
+              <h3>Stack 5 Solution</h3>
+              <img src="./images/stack5solv.gif"  class="img-fluid rounded" width="100%" style="margin-top: 1em;margin-bottom: 2em;">
+              <p>Notice when we run the command 'whoami' before our exploit, we get the result 'user'. After running our program, the result of 'whoami' is 'root'. We've successfully elevated our privileges. Here is an 
+                  overview: We had a program with the sticky bit set. So we wanted to spawn a shell while the program was running so that we would have root credentials. We placed our shellcode
+                  that was designed to spawn a shell inside of our buffer. Before the shellcode, we placed a NOP sled full of '\x90' (which means do nothing), so that if we landed on our sled it would lead execution straight to our 
+                  shellcode. The difficult part was redirecting with EIP outside of the debugger. Getting the exploit to work in GDB was easy, outside of GDB is where it definitely took some patience.
+              </p>
+              <hr>
+      </div>
+            
+    </div>
+
+      <!-- Sidebar Widgets Column -->
+      <div class="col-md-4" style="margin-top:50px;background-color: #171717;">
+
+                <!-- Categories Widget -->
+                <div class="card my-4" style="background-color: #171717;border-color: #2a2c24;">
+                    <h5 class="card-header" style="background-color: #2a2c24;">Categories</h5>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <ul class="list-unstyled mb-0">
+                            <li>
+                              <a href="#">Linux</a>
+                            </li>
+                            <li>
+                              <a href="#">Rootkits</a>
+                            </li>
+                            <li>
+                              <a href="#">Reversing</a>
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-lg-6">
+                          <ul class="list-unstyled mb-0">
+                            <li>
+                              <a href="#">C/C++</a>
+                            </li>
+                            <li>
+                              <a href="#">Random</a>
+                            </li>
+                            <li>
+                              <a href="#">Tutorials</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                      <!-- Side Widget -->
+                      <div class="card my-4" style="border-color: transparent;background-color: #171717;">
+                        <h5 class="card-header" style="visibility: hidden;"></h5>
+                        <div class="card-body">
+                          <p class="text-center"><img src="./images/SNOW.jpeg" style="border-radius: 50%; height:150px;"></p>
+                          <h4 class="text-center" style="color:#f4f9f5">unst4b13</h4>
+                          <p class="text-center" style="color:#f4f9f5;margin-top:-0.5em;">programmer | infosec</p>
+                          <p class="text-center"><img src="https://www.hackthebox.eu/badge/image/91580" alt="Hack The Box"> </p>                           
+                          <p class="text-center" style="margin-top: 0.5em;"><i class="fab fa-github" style="padding-right:2%; color: #f4f9f5;"></i><a href="https://github.com/unst4b13">github</a></p>
+                        </div>
+                      </div>
+
+                      <div class="card my-4" style="background-color: #171717;border-color: #2a2c24">
+                        <h5 class="card-header" style="background-color: #2a2c24;">Notes 🗒</h5>
+                        <div class="card-body" style="padding-left:25px;">
+                          <div class="row">
+                            <div class="col-lg-12" style="line-height: 22px;">
+                              <ul class="list-unstyled mb-0" style="font-size: 16px;">
+                                <li>🤬  cashiers taking too long</li>
+
+                                <li>😎  wearing all black</li>
+                                <li>😠  pi's pretending to be census workers</li>
+                              </ul>
+                              </div>
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+
+    </div>
+    <!-- /.row -->
+
+  </div>
+  <!-- /.container -->
+
+  <!-- Footer -->
+  <footer class="py-5" style="background-color: #171717;">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; unst4b13 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+
+@import url('https://fonts.googleapis.com/css?family=Ubuntu&display=swap');
+
+.navbar {
+  background-color: #252627;
+}
+
+.navbar a:hover {
+  color: #fe8a45;
+}
+
+body {
+  padding-top: 56px;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.py-5 {
+  background-color: #252627;;
+}
+
+a:hover{
+  color: #fe8a45;
+}
+
+p {
+  font-size: 18px;
+}
+
+.variable {
+  color: #7dc3fd;
+  letter-spacing: 2px;
+}
+
+.integer {
+  color:#f21b3f;
+  letter-spacing: 2px;
+}
+
+.function {
+  color:#d138bf;
+  letter-spacing: 2px;
+}
+
+.instruction {
+  color:#97cc04;
+  letter-spacing: 2px;
+}
+
+.address {
+  color:#eeb902;
+  letter-spacing: 2px;
+}

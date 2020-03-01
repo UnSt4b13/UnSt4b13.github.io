@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>unst4b13</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="./css/blog-home.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+</head>
+
+<body style="background-color: #171717;color:white;">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">unst4b13</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="rop.html">ROP Videos</a>
+          </li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Protostar
+              </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="stack.html">Stack Exploits</a>
+              <a class="dropdown-item" href="heap.html">Heap Exploits</a>
+          </div>
+      </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Blog Entries Column -->
+      <div class="col-md-8">
+            <h1 style="margin-top:1em;margin-bottom:0.5em;">Protostar Exploit Exercises</h1>
+            <p>The Protostar virtual machine is available for download <a href="https://www.vulnhub.com/entry/exploit-exercises-protostar-v2,32/">here</a> at <a href="https://www.vulnhub.com/">https://www.vulnhub.com</a>.</p>
+            <p>The source code for all of the exercises are availabe at <a href="https://exploit-exercises.lains.space/protostar/">https://exploit-exercises.lains.space</a>.</p>
+            <hr>
+            <div data-spy="scroll" data-target="#list-example" data-offset="0" class="scrollspy-example">
+                <h3>Heap 0</h3>
+                <img src="./images/heap0.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+                <p>In this program there are two functions: <span class="function"><b>winner()</b></span> and <span class="function"><b>nowinner()</b></span>. To call
+                  <span class="function"><b>winner()</b></span>, the following lines of code are critical:</p>
+                     <ul><li>d = malloc(sizeof(struct data));</li>
+                     <li>f = malloc(sizeof(struct fp));</li>
+                     <li>f->fp = nowinner;</li></ul>
+                <p>The <span class="function"><b>malloc()</b></span> function allocates memory based on what is passed into it. It will return an address to where that memory starts on the heap.  So <span class="variable"><b>d</b></span> (which is a pointer) will contain an address on the heap that is the 
+                    beginning of the struct  <span class="variable"><b>data</b></span>. Next,  <span class="variable"><b>f</b></span> is also assigned an address on the heap. The third line assigns the <span class="function"><b>nowinner()</b></span> function to the  <span class="variable"><b>fp</b></span> function pointer. This is just assigning <span class="function"><b>nowinner()</b></span> to the function pointer, it is not calling
+                    it yet. The function pointer nows points to <span class="function"><b>nowinner()</b></span>. So if we just run the program normally, then the <span class="function"><b>nowinner()</b></span> function will be called every time. 
+                  The final command: <span class="instruction"><b>./heap0 $(python -c 'print "A" * 80 + "\x64\x84\x04\x08"')</b></span></p>
+                <h3 style="margin-top:1em;margin-bottom:-0.5em;">Heap 0 Solution</h3>
+                <img src="./images/heap0solv.png"  class="img-fluid rounded" width="100%"  style="margin-top:1.5em;margin-bottom:1em;transition: transform 0.75 ease-in;">
+                <p>This program uses the <span class="function"><b>strcpy()</b></span> function with no byte check. I'm able to overwrite and spill into the function pointer in the next line as shown above. The big clue was the program giving us the location
+                    of the struct <span class="variable"><b>data</b></span> and the <span class="variable"><b>fp</b></span> function pointer. They are <span class="integer"><b>80</b></span> bytes apart on the heap. If the program didn't give us this clue, I still could have set a breakpoint after each call to <span class="function"><b>malloc()</b></span> in GDB and written down the return values. 
+                </p>
+                <hr>
+                <h3>Heap 1</h3>
+                <img src="./images/heap1.png" class="img-fluid rounded" width="100%" style="margin-top: 2em;margin-bottom: 2em;">
+                <p>Again, the goal of this exercise to call <span class="function"><b>winner()</b></span>. With the four calls to <span class="function"><b>malloc()</b></span>,
+                my first instinct is to breakpoint after the second call to <span class="function"><b>strcpy()</b></span> and examine where everything is laid out on the heap. I run the program with:
+                <span class="instruction"><b>./heap1 AAAAAAAA BBBBBBBB</b></span> and in the debugger I use the command: <span class="instruction"><b>x/20xw 0x804b160</b></span>
+                to get the layout below:</p>
+                <img src="./images/heap1a.png" class="img-fluid rounded" width="100%" style="margin-top: 1em;margin-bottom: 2em;">
+                <p>Above I can see the variables <span class="variable"><b>i1->priority</b></span> and <span class="variable"><b>i2->priority</b></span> set to 
+                  <span class="integer"><b>1</b></span> and <span class="integer"><b>2</b></span>. Next, I can see the addresses returned from <span class="function"><b>malloc()</b></span>, 
+                  <span class="address"><b>0x0804b170</b></span>and <span class="address"><b>0x0804b190</b></span>, they point to our arguments "
+                  <span class="instruction"><b>AAAAAAAA</b></span>" and "<span class="instruction"><b>BBBBBBBB</b></span>" respectively. With my first argument I can 
+                  overwrite the pointer to the second argument with a different address. Then with the second argument I can write whatever I want to that specific address. How does this help me call <span class="function"><b>winner()</b></span>?
+                  Since I'm able write to any address, I'm going to trick the program into calling <span class="function"><b>winner()</b></span> instead of <span class="function"><b>printf()</b></span> 
+                  which is just below the calls to <span class="function"><b>strcpy()</b></span>. How do you get a libc function to call something else? 
+                </p>
+                <h3 style="color:#eb4b98;margin-bottom:1em;margin-top: 1em;">Overwriting PLT </h3>
+                <p>Below is the PLT entry for <span class="function"><b>puts()</b></span>. The compiler turns <span class="function"><b>printf()</b></span>
+                into <span class="function"><b>puts()</b></span> for optimization. The way this binary was compiled the GOT address has already been resolved to 
+                <span class="address"><b>0x804a01c</b></span>. So, whenever <span class="function"><b>printf()</b></span> gets called, the program
+                will go to this address to run <span class="function"><b>puts()</b></span>.</p>
+                <img src="./images/heap1b.png" class="img-fluid rounded" width="100%" style="margin-top: 1em;margin-bottom: 2em;">
+                <p>I'm going to overwrite the pointer to our second argument with <span class="address"><b>0x804a01c</b></span>, which normall points to an address in the 
+                Global Offset Table. However, since I'm able to write whatever I want to that address, I'm going to write the address of the <span class="function"><b>winner()</b></span>
+                function with the command: <span class="instruction"><b>./heap1 "$(python -c 'print "A" * 20 + "\x1c\xa0\x04\x08"')" "$(python -c 'print "\xe6\x84\x04\x08"')"</b></span></p>
+                <h3 style="margin-top:1em;">Heap 1 Solution</h3>
+                <img src="./images/heap1solv.png" class="img-fluid rounded" width="100%" style="margin-top: 1em;margin-bottom: 2em;">
+                <p>For more information on the PLT and dynamic linking, I highly suggest the following video: <a href="https://archive.org/details/LoB2013D2P28">https://archive.org/details/LoB2013D2P28</a>.
+                It's presented by Xeno Kovah, a security-engineer at Apple who teaches classes on low-level security. I've taken the x86-64 and Life of Binaries courses and both are remarkable in the quality
+                of material they provide.
+            </p>
+                <hr>
+
+      </div>            
+    </div>
+
+      <!-- Sidebar Widgets Column -->
+      <div class="col-md-4" style="margin-top:50px;background-color: #171717;">
+
+                <!-- Categories Widget -->
+                <div class="card my-4" style="background-color: #171717; border-color: #2a2c24;">
+                    <h5 class="card-header" style="background-color: #2a2c24;">Categories</h5>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-lg-6">
+                          <ul class="list-unstyled mb-0">
+                            <li>
+                              <a href="#">Linux</a>
+                            </li>
+                            <li>
+                              <a href="#">Rootkits</a>
+                            </li>
+                            <li>
+                              <a href="#">Reversing</a>
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-lg-6">
+                          <ul class="list-unstyled mb-0">
+                            <li>
+                              <a href="#">C/C++</a>
+                            </li>
+                            <li>
+                              <a href="#">Random</a>
+                            </li>
+                            <li>
+                              <a href="#">Tutorials</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                      <!-- Side Widget -->
+                      <div class="card my-4" style="border-color: transparent;background-color: #171717;">
+                        <h5 class="card-header" style="visibility: hidden;"></h5>
+                        <div class="card-body">
+                          <p class="text-center"><img src="./images/SNOW.jpeg" style="border-radius: 50%; height:150px;"></p>
+                          <h4 class="text-center" style="color:#f4f9f5">unst4b13</h4>
+                          <p class="text-center" style="color:#f4f9f5;margin-top:-0.5em;">programmer | infosec</p>
+                          <p class="text-center"><img src="https://www.hackthebox.eu/badge/image/91580" alt="Hack The Box"> </p>
+                          <p class="text-center" style="margin-top: 0.5em;"><i class="fab fa-github" style="padding-right:2%; color: #f4f9f5;"></i><a href="https://github.com/unst4b13">github</a></p>
+                        </div>
+                      </div>
+
+                      <div class="card my-4" style="background-color: #171717;border-color: #2a2c24">
+                        <h5 class="card-header" style="background-color: #2a2c24;">Notes 🗒</h5>
+                        <div class="card-body" style="padding-left:25px;">
+                          <div class="row">
+                            <div class="col-lg-12" style="line-height: 22px;">
+                              <ul class="list-unstyled mb-0" style="font-size: 16px;">
+                                <li>🤬  cashiers taking too long</li>
+                                <li>😎  wearing all black</li>
+                                <li>😠  pi's pretending to be census workers</li>
+                              </ul>
+                              </div>
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+
+    </div>
+    <!-- /.row -->
+
+  </div>
+  <!-- /.container -->
+
+  <!-- Footer -->
+  <footer class="py-5">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; unst4b13 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
